@@ -1,0 +1,219 @@
+Client -> Server
+
+1: HOST_LOBBY
+2: JOIN_LOBBY
+3: LEAVE_LOBBY
+4: START_GAME
+5: INPUT
+
+Server -> Client
+
+1:  BROADCAST_LOBBY_LIST
+2:  DENIED
+3:  JOIN_ACCEPT
+4:  BROADCAST_LOBBY_STATE (on join or leave)
+5:  START_ACCEPT
+6:  TIME_LEFT
+7:  WORLDSTATE_PLAYERINFO
+8:  WORLDSTATE_PLAYERATTACKINFO
+9:  WORLDSTATE_SPAWNERINFO
+10: WORLDSTATE_ENEMYINFO
+11: WORLDSTATE_PICKUPINFO
+12: GAMEOVER
+
+12: SERVER_PLAYER_DEATH?
+13: SERVER_PLAYER_RESPAWN?
+
+Client -> Server
+
+	HOST_LOBBY
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8	Packet Type
+
+	JOIN_LOBBY
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	1	1	uint8	Room ID
+	2	1	uint8	Player ID
+
+	LEAVE_LOBBY
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+
+	START_GAME
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	1	1	uint8	Room ID
+	
+	INPUT
+	O 	L 	Type 	Description
+	============================
+	0 	1 	uint8	Packet Type
+	1	1	uint8	Input 0QWE PJLR (attacks Q, W, E   JumpOnPress, Jump, Left, Right) // bitfield
+
+Server -> Client
+
+	BROADCAST_LOBBY_LIST
+	O 	L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8	Number of (Nonfull, not started) Rooms
+	----------------------------
+	(2 + n)		1	uint8	Available Seats
+
+	DENIED (Sent if a player tries to join a room but it becomes full before client notices, or host leaves)
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+
+	JOIN_ACCEPT
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	1	1	uint8	Room ID
+	2	1	uint8	Full Seats (0 for empty, 1 for full) // bitfield
+
+	LOBBY_STATE
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	1	1	uint8	Full Seats (0 for empty, 1 for full) // bitfield
+
+	START_ACCEPT
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+
+	TIME_LEFT
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	1	2	uint16	Seconds Left
+
+	WORLDSTATE_PLAYERINFO
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Number of Players
+	----------------------------
+	(2 + n) 	1 	uint8 	Object Index
+	(3 + n)		4	float	X Pos
+	(7 + n)		4	float	Y Pos
+
+	KILL_PLAYER
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	2	1	uint8 	ID of player to kill
+	3	1	uint8 	ID of player who won ( > 0 if game over, 20 if tie?)
+
+	STAT_UPDATE
+	O 	L 	Type 	Description
+	============================
+	0	1	uint8 	Packet Type
+	1	2	uint16	Current HP
+	3	2	uint16	Max HP
+	5	2	uint16	Current Energy
+	7	2	uint16	Max Energy
+
+	ADD_ENEMY
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Enemy Type
+
+	REMOVE_ENEMY
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Enemy Index
+
+	WORLDSTATE_ENEMYINFO
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Number of Enemies
+	----------------------------
+	(2 + 10n) 	1 	uint8 	Enemy Index
+	(3 + 10n) 	1 	uint8 	Target Player ID
+	(4 + 10n)	4	float	X Pos
+	(8 + 10n)	4	float	Y Pos
+
+	PLAY_ATTACK
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Player ID
+	1			1	uint8 	Attack Type
+
+	WORLDSTATE_PLAYERATTACKINFO
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Number of Attacks
+	----------------------------
+	(2 + n) 	1 	uint8 	Object Index
+	(3 + n)		1	uint8	Attack Type
+	(4 + n)		4	float	X Pos
+	(8 + n)		4	float	Y Pos
+
+	WORLDSTATE_SPAWNERINFO // 
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Number of Spawners
+	----------------------------
+	(2 + 9n) 	1 	uint8 	Spawner Index
+	(3 + 9n)	4	float	X Pos
+	(7 + 9n)	4	float	Y Pos
+
+	ADD_PICKUP
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Pickup Type
+	2			1	uint8 	Pickup Amount
+
+	REMOVE_PICKUP
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Pickup ID
+	
+	WORLDSTATE_PICKUPINFO // TODO:
+	O 			L 	Type 	Description
+	============================
+	0			1	uint8 	Packet Type
+	1			1	uint8 	Number of Pickups
+	----------------------------
+	(2 + 9n) 	1 	uint8 	Pickup Index
+	(3 + 9n)	4	float	X Pos
+	(7 + 9n)	4	float	Y Pos
+
+
+
+
+
+
+
+
+	WORLD STATE EXAMPLE
+	O 	L 	Type 	Description
+	============================
+	0 	4 	uint32 	Protocol ID
+	4	1	uint8 	Packet Type
+	5	4	uint32	Sequence #
+	9	4	uint32	Ack #
+	13	4	flags	Ack Bitfield // sends a bitfield representing previous 32 packets and whether or not they have been received
+	17 	1	uint8 	Number of Objects
+	----------------------------
+	0 	1 	uint8 	Object ID (18 + 17*n)
+	1	4	float	X Pos (19 + 17*n)
+	5	4	float	Y Pos
+	9	4	float	X Vel
+	13	4	float	Y Vel
+
